@@ -16,7 +16,7 @@
 * Our init functions creates the publisher for the /cmd_vel topic and the subscriber to the /scan
 topic, as well as initialize our node and twist class member. The scan subscriber calls process_scan with the scan data and here is where our movement is calculated. We calculate the angle we need to face by finding the degree that corresponds to the closest object. We turn to face that object using proportional control and this becomes our angular movement. We move forward only if we are not too close based on the distance we set, but also if we are roughly facing the object, it doesn't need to be dead on but we don't want to move away from the object and potentially lose it. If we are close enough we stop moving forward. Our run method is what keeps our program updating by running rospy.spin(), and our main method creates our node and runs it.
 
-* ![Person Follower](./wall_follower_demo.gif)
+* ![Person Follower](./person_follower_demo.gif)
 
 
 ## Wall Follower
