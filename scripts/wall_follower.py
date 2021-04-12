@@ -7,7 +7,6 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Vector3
 
-#Like to keep a meter from the wall
 distance = 0.8
 
 class WallFollower(object):
@@ -34,7 +33,8 @@ class WallFollower(object):
         self.twist.linear.x = 0.25
 
 
-        #Move away from the wall if we are too close, do so at a lower velocity to prevent overcorrection.
+        #Move away from the wall if we are getting too close, do so at a lower velocity to prevent overcorrection.
+        #We start slightly before we hit the distance to give the robot a chance to move in time
         if data.ranges[0] < distance + 0.1 or data.ranges[45] < distance + 0.1:
             ideal_angle_to_wall = (angle_to_wall + 90)%360
             self.twist.linear.x = 0.1
