@@ -11,6 +11,13 @@
 
 ## Person Follower
 
+* To follow the person/cylinder, we simply take the results of the lidar scan to find which direction we must face, we turn towards that direction, and once we are facing that object we move forward torwards it. We are constantly updating the scan results so if the object moves we can turn to face it again and move forward.
+
+* Our init functions creates the publisher for the /cmd_vel topic and the subscriber to the /scan
+topic, as well as initialize our node and twist class member. The scan subscriber calls process_scan with the scan data and here is where our movement is calculated. We calculate the angle we need to face by finding the degree that corresponds to the closest object. We turn to face that object using proportional control and this becomes our angular movement. We move forward only if we are not too close based on the distance we set, but also if we are roughly facing the object, it doesn't need to be dead on but we don't want to move away from the object and potentially lose it. If we are close enough we stop moving forward. Our run method is what keeps our program updating by running rospy.spin(), and our main method creates our node and runs it.
+
+* ![Person Follower](./wall_follower_demo.gif)
+
 
 ## Wall Follower
 
@@ -21,5 +28,19 @@
 * ![Wall Follwer](./wall_follower_demo.gif)
 
 
+
+## Challenges
+
+The drive in the square was easy enough. The person follower was fine except for when we wanted to move towards the object in question. At first it would only move if it was exactly facing the object, but this proved to be cumbersome and impractical, so the conditon to move if it was roughly facing the right direction was added. I had some trouble with the wall follower, trying to reason when the wall angle should change and how we implement that behavior into an angular movement was tricky. The ideal_angle used to not exist and was just the number 90, but this proved to be troblesome because the robot would always get closer to the wall and eventually would touch the way and stop responding. The dynamic ideal_angle_to_wall allows the robot to correct itself and not get too close to the wall. It used to only respond to when the 0 degree measurement was too close, but this was also causing problems with bumping into the wall and checking the 45 degree spot fixed this issue.
+
+## Future Work
+
+The wall follower when positioned far away from the wall or even when close to a way may do a little twirl or two as it navigates close enough to a wall to behave properly. With more time I'd like to remove the twirling, despite the stylish flair it adds to the program. The person follower moves a bit oddly, only moving forward when it is facing and stopping when necessary to face another direction. I'd like it to be more dynamic and smooth, updating direction while also retaining some movement not stopping entirely to turn.
+
+## Takeaways
+
+* Playing around with angles can be tricky. Calculating the exact angles you want your robot to face or face relative to can be troublesome and noise + other environmental factors can make moving your robot precisely difficult. To alleivate this, it pays to take sensor data from other nearby sources/angles and programming your robot to operate within a range of acceptable parameters not just a single point or angle.
+
+* Turning and changing direction can be slow, so moving earlier can be better. In order to keep a certain distance from an object or some other goal, having your robot begin changing its behavior before it hits a distance can mean a smoother transition to whatever movement is required and can do a better job at maintaining a distane or position than simply moving at the last second. I suppose this is what PID control is all about.
 
 

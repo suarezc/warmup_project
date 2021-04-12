@@ -28,25 +28,29 @@ class WallFollower(object):
         ideal_angle_to_wall = 90
 
         #calculates the angle that is closest to the wall for positioning purposes
-        angle_to_face = data.ranges.index(min(data.ranges))
+        angle_to_wall = data.ranges.index(min(data.ranges))
 
         #default speed is 0.25
         self.twist.linear.x = 0.25
 
+
+        #Move away from the wall if we are too close, do so at a lower velocity to prevent overcorrection.
         if data.ranges[0] < distance + 0.1 or data.ranges[45] < distance + 0.1:
-            ideal_angle_to_wall = (angle_to_face + 90)%360
+            ideal_angle_to_wall = (angle_to_wall + 90)%360
             self.twist.linear.x = 0.1
 
 
         #proportional control
         kp = 0.5
-        diffang = ((ideal_angle_to_wall - angle_to_face)/180) * 3.14
+        diffang = ((ideal_angle_to_wall - angle_to_wall)/180) * 3.14
         angular = diffang * kp
         self.twist.angular.z = -angular
 
         
 
-        #only move if the robot detects something, is far away enough and if it is facing the object within reason
+        #if robot is too far away to see wall simply move straight
+        if min(data.ranges) == float("inf"):
+            self.twist.angular.z = 0
 
         # Publish msg to cmd_vel.
         self.twist_pub.publish(self.twist)

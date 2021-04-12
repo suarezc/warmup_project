@@ -23,6 +23,8 @@ class PersonFollower(object):
         self.twist = Twist(linear=lin,angular=ang)
 
     def process_scan(self,data):
+
+        #calculate the angle we need to face in order to face the closest object to the robot
         angle_to_face = data.ranges.index(min(data.ranges))
 
         #turn left if it will be closer
