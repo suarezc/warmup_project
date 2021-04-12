@@ -28,6 +28,7 @@ class PersonFollower(object):
         #turn left if it will be closer
         if angle_to_face > 180:
             angle_to_face = angle_to_face - 360
+        #proportional control
         kp = 0.5
         diff = ((0 - angle_to_face)/180) * 3.14
         angular = diff * kp
@@ -35,12 +36,12 @@ class PersonFollower(object):
     
         self.twist.angular.z = -angular
 
-        #only move if the robot is far away enough and if it is facing the object within reason
-        if min(data.ranges) >= distance and (angle_to_face > -30 and angle_to_face < 30):
-            # Go forward if not close enough to wall.
+        #only move if the robot detects something, is far away enough and if it is facing the object within reason
+        if (min(data.ranges) >= distance and min(data.ranges) != float("inf")) and (angle_to_face > -30 and angle_to_face < 30):
+            #move if not close
             self.twist.linear.x = 0.3
         else:
-            # Close enough to wall, stop.
+            # Close enough, stop.
             self.twist.linear.x = 0
         # Publish msg to cmd_vel.
         self.twist_pub.publish(self.twist)
